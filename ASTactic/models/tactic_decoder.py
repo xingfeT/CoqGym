@@ -9,7 +9,7 @@ from tac_grammar import TerminalNode, NonterminalNode
 from lark.lexer import Token
 
 
-class AvgLoss:
+class AvgLoss(object):
     "Maintaining the average of a set of losses"
 
     def __init__(self, device):
@@ -28,11 +28,14 @@ class ContextReader(nn.Module):
     def __init__(self, opts):
         super().__init__()
         self.opts = opts
+
         self.linear1 = nn.Linear(
             opts.hidden_dim + opts.term_embedding_dim + 3, opts.hidden_dim
         )
         self.relu1 = nn.ReLU()
+
         self.linear2 = nn.Linear(opts.hidden_dim, 1)
+
         self.default_context = torch.zeros(
             self.opts.term_embedding_dim + 3, device=self.opts.device
         )
@@ -81,19 +84,25 @@ class TacticDecoder(nn.Module):
         super().__init__()
         self.opts = opts
         self.grammar = grammar
+
         self.symbol_embeddings = nn.Embedding(
             len(self.grammar.symbols), opts.symbol_dim
         )
+
         self.production_rule_embeddings = nn.Embedding(
             len(self.grammar.production_rules), opts.embedding_dim
         )
+
         self.lex_rule_embeddings = nn.Embedding(
             len(self.grammar.terminal_symbols), opts.embedding_dim
         )
+
         self.default_action_embedding = torch.zeros(
             self.opts.embedding_dim, device=self.opts.device
         )
+
         self.default_state = torch.zeros(self.opts.hidden_dim, device=self.opts.device)
+
         self.controller = nn.GRUCell(
             2 * opts.embedding_dim
             + 2 * opts.term_embedding_dim
@@ -102,6 +111,7 @@ class TacticDecoder(nn.Module):
             + opts.symbol_dim,
             opts.hidden_dim,
         )
+
         self.state_decoder = nn.Sequential(
             nn.Linear(opts.hidden_dim, opts.embedding_dim), nn.Tanh()
         )
@@ -138,6 +148,7 @@ class TacticDecoder(nn.Module):
             return self.production_rule_embeddings(
                 torch.LongTensor([idx]).to(self.opts.device)
             ).squeeze()
+
         else:  # a token
             idx = self.grammar.terminal_symbols.index(action)
             return self.lex_rule_embeddings(

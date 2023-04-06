@@ -14,4 +14,5 @@ class EmbeddingMap(nn.Module):
             nn.init.normal_(embedding, std=0.1)
             self.mapping[key] = embedding
             self.register_parameter(key, embedding)
+
         return self.mapping[key]
