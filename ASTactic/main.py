@@ -11,7 +11,6 @@ import pdb
 
 
 def main():
-
     # parse the options
     opts = parse_args()
 
